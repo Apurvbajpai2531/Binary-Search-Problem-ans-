@@ -1,0 +1,109 @@
+Minimum days to make M bouquets
+
+Problem Statement: You are given 'N’ roses and you are also given an array 'arr' where 'arr[i]' denotes that the 'ith' rose will bloom on the 'arr[i]th' day. You can only pick already bloomed roses that are adjacent to make a bouquet. You are also told that you require exactly 'k' adjacent bloomed roses to make a single bouquet. Find the minimum number of days required to make at least ‘m' bouquets each containing 'k' roses. Return -1 if it is not possible.
+
+Examples
+Example 1:
+Input Format: N = 8, arr[] = {7, 7, 7, 7, 13, 11, 12, 7}, m = 2, k = 3
+Result: 12
+Explanation: On the 12th the first 4 flowers and the last 3 flowers would have already bloomed. So, we can easily make 2 bouquets, one with the first 3 and another with the last 3 flowers.
+
+Example 2:
+Input Format: N = 5, arr[] = {1, 10, 3, 10, 2}, m = 3, k = 2
+Result: -1
+Explanation: If we want to make 3 bouquets of 2 flowers each, we need at least 6 flowers. But we are given only 5 flowers, so, we cannot make the bouquets.
+
+
+class Solution {
+
+    public boolean possible(int[] bloomDay,
+                            int day,
+                            int m,
+                            int k) {
+
+        int n = bloomDay.length;
+
+        int cnt = 0;
+        int noofb = 0;
+
+        for (int i = 0; i < n; i++) {
+
+            // Flower bloomed
+            if (bloomDay[i] <= day) {
+
+                cnt++;
+            }
+
+            // Sequence breaks
+            else {
+
+                noofb += (cnt / k);
+                cnt = 0;
+            }
+        }
+
+        // Remaining flowers
+        noofb += (cnt / k);
+
+        return noofb >= m;
+    }
+
+    public int minDays(int[] bloomDay, int m, int k) {
+
+        int n = bloomDay.length;
+
+        // Impossible case
+        if ((long) m * k > n)
+            return -1;
+
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+
+        // Find min and max
+        for (int day : bloomDay) {
+
+            min = Math.min(min, day);
+            max = Math.max(max, day);
+        }
+
+        int low = min;
+        int high = max;
+
+        int ans = -1;
+
+        // Binary Search
+        while (low <= high) {
+
+            int mid = low + (high - low) / 2;
+
+            if (possible(bloomDay, mid, m, k)) {
+
+                ans = mid;
+                high = mid - 1;
+            }
+
+            else {
+
+                low = mid + 1;
+            }
+        }
+
+        return ans;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+Time Complexity: O(1) O(log(max(arr[])-min(arr[])+1) * N), where {max(arr[]) -> maximum element of the array, min(arr[]) -> minimum element of the array, N = size of the array}.
+
+Space Complexity : O(h)O(1) as we are not using any extra space to solve this problem.
