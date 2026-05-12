@@ -1,0 +1,527 @@
+Aggressive Cows : Detailed Solution
+
+Problem Statement: You are given an array 'arr' of size 'n' which denotes the position of stalls. You are also given an integer 'k' which denotes the number of aggressive cows.
+You are given the task of assigning stalls to 'k' cows such that the minimum distance between any two of them is the maximum possible. Find the maximum possible minimum distance.
+
+Examples
+Example 1:
+Input Format:
+ N = 6, k = 4, arr[] = {0,3,4,7,10,9}
+Result:
+ 3
+Explanation:
+ The maximum possible minimum distance between any two cows will be 3 when 4 cows are placed at positions {0, 3, 7, 10}. Here the distances between cows are 3, 4, and 3 respectively. We cannot make the minimum distance greater than 3 in any ways.
+
+Example 2:
+Input Format:
+ N = 5, k = 2, arr[] = {4,2,1,3,6}
+Result:
+ 5
+Explanation:
+ The maximum possible minimum distance between any two cows will be 5 when 2 cows are placed at positions {1, 6}. 
+
+
+
+
+
+//Brute Force Code
+
+
+class Solution {
+
+    public boolean CanWePlace(int[] stalls,
+                              int dist,
+                              int cows) {
+
+        int n = stalls.length;
+
+        int cnt = 1;
+
+        int last = stalls[0];
+
+        for (int i = 1; i < n; i++) {
+
+            // Place cow
+            if (stalls[i] - last >= dist) {
+
+                cnt++;
+                last = stalls[i];
+            }
+
+            // All cows placed
+            if (cnt >= cows)
+                return true;
+        }
+
+        return false;
+    }
+
+    public int aggressiveCows(int[] stalls, int cows) {
+
+        int n = stalls.length;
+
+        Arrays.sort(stalls);
+int min = stalls[0];
+        int max = stalls[n - 1];
+
+        // Try every distance
+        for (int i = 1; i <= (max - min); i++) {
+
+            if (CanWePlace(stalls, i, cows)) {
+
+                continue;
+            }
+
+            else {
+
+                return i - 1;
+            }
+
+}
+
+        return -1;
+    }
+}
+
+TC->O(n log n + n × (max-min))
+SC-> o(1)
+
+
+
+
+
+////Optimal Approach 
+
+class Solution {
+
+    public boolean CanWePlace(int[] stalls,
+                              int dist,
+                              int cows) {
+
+        int n = stalls.length;
+
+        int cnt = 1;
+
+        int last = stalls[0];
+
+        for (int i = 1; i < n; i++) {
+
+            // Place cow
+            if (stalls[i] - last >= dist) {
+
+                cnt++;
+                last = stalls[i];
+            }
+
+            // All cows placed
+            if (cnt >= cows)
+                return true;
+        }
+
+        return false;
+    }
+
+    public int aggressiveCows(int[] stalls, int cows) {
+
+        int n = stalls.length;
+ Arrays.sort(stalls);
+
+        int low = 1;
+
+        int high = stalls[n - 1] - stalls[0];
+
+        int ans = -1;
+
+        while (low <= high) {
+
+            int mid = low + (high - low) / 2;
+
+            // Possible distance
+            if (CanWePlace(stalls, mid, cows)) {
+
+                ans = mid;
+                low = mid + 1;
+            }
+
+            else {
+
+                high = mid - 1;
+            }
+        }
+
+        return ans;
+    }
+}
+
+TC-> O(n log n + n log(max-min))
+SC-> O(1)
+
+
+DRY RUN 
+
+
+# Aggressive Cows — Dry Run
+
+## Input
+
+```java
+stalls = [1,2,4,8,9]
+cows = 3
+```
+
+After sorting:
+
+```java
+[1,2,4,8,9]
+```
+
+---
+
+# Initial Values
+
+```java
+low = 1
+high = 8
+ans = -1
+```
+
+Because:
+
+```java
+high = stalls[n-1] - stalls[0]
+      = 9 - 1
+      = 8
+```
+
+---
+
+# Iteration 1
+
+## Find Mid
+
+```java
+mid = low + (high - low)/2
+mid = 1 + (8-1)/2
+mid = 4
+```
+
+Check:
+
+```java
+CanWePlace(stalls, 4, 3)
+```
+
+---
+
+# CanWePlace(dist = 4)
+
+Place first cow at:
+
+```java
+1
+```
+
+```java
+cnt = 1
+last = 1
+```
+
+---
+
+## Check stall = 2
+
+```java
+2 - 1 = 1 < 4
+```
+
+Cannot place cow.
+
+---
+
+## Check stall = 4
+
+```java
+4 - 1 = 3 < 4
+```
+
+Cannot place.
+
+---
+
+## Check stall = 8
+
+```java
+8 - 1 = 7 >= 4
+```
+
+Place cow.
+
+```java
+cnt = 2
+last = 8
+```
+
+---
+
+## Check stall = 9
+
+```java
+9 - 8 = 1 < 4
+```
+
+Cannot place.
+
+---
+
+Total cows placed:
+
+```java
+2
+```
+
+Need:
+
+```java
+3
+```
+
+Return:
+
+```java
+false
+```
+
+---
+
+# Update Binary Search
+
+Since placement not possible:
+
+```java
+high = mid - 1
+high = 3
+```
+
+---
+
+# Iteration 2
+
+Now:
+
+```java
+low = 1
+high = 3
+```
+
+## Find Mid
+
+```java
+mid = 1 + (3-1)/2
+mid = 2
+```
+
+Check:
+
+```java
+CanWePlace(stalls, 2, 3)
+```
+
+---
+
+# CanWePlace(dist = 2)
+
+Place first cow at:
+
+```java
+1
+```
+
+```java
+cnt = 1
+last = 1
+```
+
+---
+
+## Check stall = 2
+
+```java
+2 - 1 = 1 < 2
+```
+
+Cannot place.
+
+---
+
+## Check stall = 4
+
+```java
+4 - 1 = 3 >= 2
+```
+
+Place cow.
+
+```java
+cnt = 2
+last = 4
+```
+
+---
+
+## Check stall = 8
+
+```java
+8 - 4 = 4 >= 2
+```
+
+Place cow.
+
+```java
+cnt = 3
+```
+
+All cows placed.
+
+Return:
+
+```java
+true
+```
+
+---
+
+# Update Binary Search
+
+Possible answer:
+
+```java
+ans = 2
+```
+
+Search bigger distance:
+
+```java
+low = mid + 1
+low = 3
+```
+
+---
+
+# Iteration 3
+
+Now:
+
+```java
+low = 3
+high = 3
+```
+
+## Find Mid
+
+```java
+mid = 3
+```
+
+Check:
+
+```java
+CanWePlace(stalls, 3, 3)
+```
+
+---
+
+# CanWePlace(dist = 3)
+
+Place first cow at:
+
+```java
+1
+```
+
+```java
+cnt = 1
+last = 1
+```
+
+---
+
+## Check stall = 2
+
+```java
+2 - 1 = 1 < 3
+```
+
+Cannot place.
+
+---
+
+## Check stall = 4
+
+```java
+4 - 1 = 3 >= 3
+```
+
+Place cow.
+
+```java
+cnt = 2
+last = 4
+```
+
+---
+
+## Check stall = 8
+
+```java
+8 - 4 = 4 >= 3
+```
+
+Place cow.
+
+```java
+cnt = 3
+```
+
+All cows placed.
+
+Return:
+
+```java
+true
+```
+
+---
+
+# Update Binary Search
+
+```java
+ans = 3
+low = mid + 1
+low = 4
+```
+
+---
+
+Now:
+
+```java
+low = 4
+high = 3
+```
+
+Loop ends.
+
+---
+
+# Final Answer
+
+```java
+3
+```
+
+Maximum minimum distance between cows:
+
+```java
+3
+```
+
