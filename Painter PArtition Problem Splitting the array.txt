@@ -1,0 +1,184 @@
+Painter Partition Problem / Split Array Largest Sum
+Problem Statement
+
+Given an array where:
+
+each element represents:
+board length (Painter Problem)
+pages (Book Allocation)
+subarray value (Split Array Largest Sum)
+
+and an integer k:
+
+divide the array into k continuous partitions
+minimize the maximum partition sum
+Example
+
+Input:
+
+arr = [10,20,30,40]
+k = 2
+
+Possible partitions:
+
+[10,20,30] [40] → max = 60
+[10,20] [30,40] → max = 70
+
+Output:
+
+60
+Intuition
+
+We need:
+
+minimum possible maximum sum
+
+This is a:
+
+Binary Search on Answer
+Search Space
+Lowest possible answer
+max element of array
+
+because one partition must contain that element.
+
+Highest possible answer
+sum of entire array
+
+when only one partition handles everything.
+
+Binary Search Logic
+
+For every mid:
+
+Can we divide the array into <= k partitions
+such that each partition sum <= mid ?
+
+If YES:
+
+try smaller answer
+
+If NO:
+
+increase answer
+Optimal Java Code
+class Solution {
+
+    public int splitArray(int[] nums, int k) {
+
+        int low = 0;
+        int high = 0;
+
+        for (int x : nums) {
+            low = Math.max(low, x);
+            high += x;
+        }
+
+        int ans = -1;
+
+        while (low <= high) {
+
+            int mid = low + (high - low) / 2;
+
+            if (possible(nums, mid, k)) {
+
+                ans = mid;
+                high = mid - 1;
+
+            } else {
+
+                low = mid + 1;
+            }
+        }
+
+        return ans;
+    }
+
+    static boolean possible(int arr[], int barrier, int k) {
+
+        int partitions = 1;
+        int sum = 0;
+
+        for (int i = 0; i < arr.length; i++) {
+
+            if (sum + arr[i] <= barrier) {
+
+                sum += arr[i];
+
+            } else {
+
+                partitions++;
+                sum = arr[i];
+            }
+        }
+
+        return partitions <= k;
+    }
+}
+Dry Run
+
+Input:
+
+arr = [7,2,5,10,8]
+k = 2
+
+Search space:
+
+low = 10
+high = 32
+
+Check:
+
+mid = 21 → possible
+mid = 15 → not possible
+mid = 18 → possible
+
+Answer:
+
+18
+
+Best partition:
+
+[7,2,5] = 14
+[10,8] = 18
+
+Maximum:
+
+18
+Time Complexity
+Operation	Complexity
+Binary Search	O(log(sum))
+Feasibility Check	O(n)
+
+Total:
+
+O(n * log(sum))
+Space Complexity
+O(1)
+Key Concept
+
+This problem belongs to:
+
+Binary Search on Answer
+Similar Problems
+Painter Partition Problem
+Book Allocation Problem
+Split Array Largest Sum
+Capacity to Ship Packages Within D Days
+Important Observation
+
+If:
+
+mid is too small
+
+then:
+
+more partitions are needed
+
+If:
+
+mid is large enough
+
+then:
+
+partitioning becomes possible
